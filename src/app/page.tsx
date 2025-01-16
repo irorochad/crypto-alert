@@ -4,8 +4,6 @@ import axios from "axios";
 
 const CryptoAlert = () => {
   const [category, setCategory] = useState("");
-  const [assetCount, setAssetCount] = useState(0);
-  const [previousCount, setPreviousCount] = useState(0);
 
   const fetchAssets = async () => {
     let totalCount = 0;
@@ -36,15 +34,11 @@ const CryptoAlert = () => {
         page++; // Move to the next page
       }
 
-      setAssetCount(totalCount); // Set the total asset count
-      if (previousCount !== 0) {
-        if (totalCount > previousCount) {
-          console.log(`Alert: Asset count increased to ${totalCount}`);
-        } else if (totalCount < previousCount) {
-          console.log(`Alert: Asset count decreased to ${totalCount}`);
-        }
-      }
-      setPreviousCount(totalCount); // Update previous count
+      // await db.insert("asset_counts").values({ category, count: totalCount });
+
+      console.log(
+        `Saved asset count for category "${category}": ${totalCount}`
+      );
     } catch (error) {
       console.error("Error fetching assets:", error);
     }
@@ -56,7 +50,7 @@ const CryptoAlert = () => {
       const interval = setInterval(fetchAssets, 1200000); // Fetch every 20 minutes
       return () => clearInterval(interval); // Cleanup on unmount
     }
-  }, [category]);
+  }, [category, fetchAssets]);
 
   return (
     <div>
@@ -67,7 +61,6 @@ const CryptoAlert = () => {
         placeholder="Enter category name"
       />
       <button onClick={fetchAssets}>Fetch Assets</button>
-      <p>Current asset count: {assetCount}</p>
     </div>
   );
 };
