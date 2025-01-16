@@ -1,11 +1,10 @@
-"use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 const CryptoAlert = () => {
   const [category, setCategory] = useState("");
 
-  const fetchAssets = async () => {
+  const fetchAssets = useCallback(async () => {
     let totalCount = 0;
     let page = 1;
     const perPage = 100; // Number of assets per page
@@ -34,7 +33,8 @@ const CryptoAlert = () => {
         page++; // Move to the next page
       }
 
-      // await db.insert("asset_counts").values({ category, count: totalCount });
+      // Save the total asset count to the database
+      //await db.insert("asset_counts").values({ category, count: totalCount });
 
       console.log(
         `Saved asset count for category "${category}": ${totalCount}`
@@ -42,7 +42,7 @@ const CryptoAlert = () => {
     } catch (error) {
       console.error("Error fetching assets:", error);
     }
-  };
+  }, [category]); // Add category as a dependency
 
   useEffect(() => {
     if (category) {
@@ -50,7 +50,7 @@ const CryptoAlert = () => {
       const interval = setInterval(fetchAssets, 1200000); // Fetch every 20 minutes
       return () => clearInterval(interval); // Cleanup on unmount
     }
-  }, [category, fetchAssets]);
+  }, [category, fetchAssets]); // Include fetchAssets in the dependency array
 
   return (
     <div>
